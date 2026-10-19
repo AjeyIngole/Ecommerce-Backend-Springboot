@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJ'S // Enterprise Storefront</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #090d16;
+            --bg-surface: rgba(19, 28, 48, 0.75);
+            --bg-card: rgba(26, 38, 64, 0.6);
+            --border-glow: rgba(99, 102, 241, 0.25);
+            --accent-primary: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --accent-success: #10b981;
+            --accent-danger: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { 
+            background-color: var(--bg-deep); 
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Sticky Navbar */
+        header {
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { 
+            font-size: 20px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span { color: var(--accent-primary); }
+
+        .cart-badge {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .cart-badge:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 360px; gap: 32px; }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+        /* Sleek Glass Cards */
+        .form-card, .cart-sidebar, .product-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-card {
+            padding: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent-primary);
+        }
+        .form-card h3 { margin-top: 0; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+        
+        .form-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        input::placeholder { color: var(--text-muted); }
+
+        button {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover { 
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        section h2 { font-size: 22px; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.5px; }
+
+        /* Product Grid & Cards */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: var(--bg-card);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+        .product-id { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; 
+            color: var(--text-muted); 
+            letter-spacing: 1px;
+        }
+        .product-name { font-size: 18px; font-weight: 700; margin: 12px 0 6px 0; color: #fff; }
+        .product-price { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px; 
+            color: var(--accent-success); 
+            font-weight: 600; 
+            margin-bottom: 20px; 
+        }
+
+        /* Action Buttons inside Card */
+        .btn-cart { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            width: 100%; 
+            margin-bottom: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+        .card-actions { display: flex; gap: 8px; }
+        .btn-edit { 
+            flex: 1;
+            background: rgba(245, 158, 11, 0.15); 
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 8px; 
+            font-size: 12px; 
+        }
+        .btn-edit:hover { background: rgba(245, 158, 11, 0.25); }
+        
+        .btn-delete { 
+            flex: 1;
+            background: rgba(244, 63, 94, 0.15); 
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 8px; 
+            font-size: 12px; 
+        }
+        .btn-delete:hover { background: rgba(244, 63, 94, 0.25); }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        .cart-sidebar h3 { 
+            margin-top: 0; 
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+            padding-bottom: 14px; 
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+        }
+        .cart-item-name { color: var(--text-main); font-weight: 500; }
+        .cart-item-price { font-family: 'JetBrains Mono', monospace; color: var(--accent-success); font-size: 13px; }
+        
+        .cart-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+        }
+        .cart-total span:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-success);
+        }
+        .empty-cart { color: var(--text-muted); text-align: center; padding: 30px 0; font-style: italic; font-size: 14px; }
+        
+        .btn-checkout {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            margin-top: 20px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Micro badge for item counts */
+        .item-count-pill {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<header>
+    <div class="logo">⚡ AJ'S <span>// ENTERPRISE</span></div>
+    <div class="cart-badge" onclick="scrollToCart()">
+        🛍️ Cart <span id="cartCount" class="item-count-pill">0</span>
+    </div>
+</header>
+
+<div class="container">
+    <div class="main-layout">
+        <!-- Main Product Section -->
+        <div>
+            <div class="form-card">
+                <h3>+ Register New Product Inventory</h3>
+                <form id="productForm" class="form-group">
+                    <input type="text" id="productName" placeholder="Product designation (e.g., Quantum Node)" required>
+                    <input type="number" id="productPrice" placeholder="Unit Price (₹)" step="0.01" required>
+                    <button type="submit">Commit to DB</button>
+                </form>
+            </div>
+
+            <section>
+                <h2>Active Catalog</h2>
+                <div id="productGrid" class="product-grid"></div>
+            </section>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div>
+            <div class="cart-sidebar" id="cartSection">
+                <h3>Order Summary</h3>
+                <div id="cartItemsList">
+                    <div class="empty-cart">Cart state is empty.</div>
+                </div>
+                <div class="cart-total">
+                    <span>Total Amount:</span>
+                    <span id="cartTotalPrice">₹0.00</span>
+                </div>
+                <button class="btn-checkout" onclick="checkout()">Authorize Checkout →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/products';
+    let cart = [];
+
+    async function loadProducts() {
+        try {
+            const response = await fetch(API_URL);
+            const products = await response.json();
+
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="product-id">NODE_REF #${product.id}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">₹${product.price.toFixed(2)}</div>
+                    </div>
+                    <div>
+                        <button class="btn-cart" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">Add to Cart +</button>
+                        <div class="card-actions">
+                            <button class="btn-edit" onclick="editProduct(${product.id}, '${product.name}', ${product.price})">Edit</button>
+                            <button class="btn-delete" onclick="deleteProduct(${product.id})">Drop</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const nameInput = document.getElementById('productName');
+        const priceInput = document.getElementById('productPrice');
+
+        const newProduct = {
+            name: nameInput.value,
+            price: parseFloat(priceInput.value)
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newProduct)
+            });
+
+            if (response.ok) {
+                nameInput.value = '';
+                priceInput.value = '';
+                loadProducts();
+            }
+        } catch (error) {
+            console.error('Error saving product:', error);
+        }
+    });
+
+    async function editProduct(id, currentName, currentPrice) {
+        const newPrice = prompt(`Modify unit price for [${currentName}]:`, currentPrice);
+        if (newPrice === null || newPrice.trim() === '' || isNaN(newPrice)) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: currentName, price: parseFloat(newPrice) })
+            });
+
+            if (response.ok) loadProducts();
+        } catch (error) {
+            console.error('Error updating product:', error);
+        }
+    }
+
+    async function deleteProduct(id) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            if (response.ok) loadProducts();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
+    }
+
+    function addToCart(id, name, price) {
+        cart.push({ id, name, price });
+        updateCartUI();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartCount = document.getElementById('cartCount');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartTotalPrice = document.getElementById('cartTotalPrice');
+
+        cartCount.innerText = cart.length;
+
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = `<div class="empty-cart">Cart state is empty.</div>`;
+            cartTotalPrice.innerText = `₹0.00`;
+            return;
+        }
+
+        let total = 0;
+        cartItemsList.innerHTML = '';
+
+        cart.forEach((item, index) => {
+            total += item.price;
+            const itemDiv = document.createElement('div');
+            itemDiv.className== 'cart-item';
+            itemDiv.innerHTML = `
+                <div>
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">₹${item.price.toFixed(2)}</div>
+                </div>
+                <button style="background:rgba(244,63,94,0.2); color:#fb7185; border:1px solid rgba(244,63,94,0.3); padding:4px 8px; font-size:11px; border-radius:6px;" onclick="removeFromCart(${index})">✕</button>
+            `;
+            cartItemsList.appendChild(itemDiv);
+        });
+
+        cartTotalPrice.innerText = `₹${total.toFixed(2)}`;
+    }
+
+    function scrollToCart() {
+        document.getElementById('cartSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            alert('Cart is empty. Nothing to process.');
+            return;
+        }
+        alert(`Transaction authorized! Total processed: ${document.getElementById('cartTotalPrice').innerText}`);
+        cart = [];
+        updateCartUI();
+    }
+
+    loadProducts();
+</script>
+
+</body>
+</html>
