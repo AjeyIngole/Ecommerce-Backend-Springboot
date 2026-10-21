@@ -17,9 +17,9 @@ public class ProductService {
     // 1. Business logic for fetching & seeding products
     public List<Product> getAllProducts() {
         if (productRepository.count() == 0) {
-            productRepository.save(new Product("Laptop", 1200.00));
-            productRepository.save(new Product("Headphones", 150.00));
-            productRepository.save(new Product("Running Shoes", 80.00));
+            productRepository.save(new Product("Laptop", 12000.00));
+            productRepository.save(new Product("Headphones", 1500.00));
+            productRepository.save(new Product("Running Shoes", 8000.00));
         }
         return productRepository.findAll();
     }
